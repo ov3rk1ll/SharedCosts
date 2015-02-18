@@ -1,5 +1,4 @@
-<ul>
-<li ng-repeat="project in projects"><a href="/#/list/{{project.id}}">{{ project.name }}</a><br />
-Author: <userbadge user="project.creator" /><br />Members: <userbadge ng-repeat="user in project.members" ng-if="user.id != project.creator.id" user="user" />
-</li>
-</ul>
+<div class="shadow-z-1" ng-repeat="project in projects" style="padding-top: 4px"> 
+<h3><a href="#/list/{{project.id}}">{{ project.name }}</a> <small>by <userbadge user="project.creator" /></userbadge></h3>
+<userbadge ng-repeat="user in project.members" ng-if="user.id != project.creator.id" user="user" />
+</div>

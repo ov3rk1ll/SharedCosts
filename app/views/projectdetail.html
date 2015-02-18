@@ -1,18 +1,34 @@
+<div class="share-wrapper col-xs-1 col-xs-push-10">
+   <a class="btn btn-fab btn-raised btn-material-yellow-A700" href="#/list/{{project.data.id}}/entry/add"><i class="mdi-content-add"></i></a>
+</div> 
 <h1>{{ project.data.name }}</h1>
-<div class="col-md-6">
-<donutchart id="donut-members" data-options="chartMembers"></donutchart>
-<!--<div ng-repeat="member in project.payments">{{member.name}}: {{member.paid}}</div>-->
+<accordion close-others="oneAtATime">
+<accordion-group heading="More Info">
+  <!--<div class="col-md-6">
+    <donutchart id="donut-members" data-options="chartMembers"></donutchart>
+  </div>-->
+  <div class="col-md-6">
+    <div ng-repeat="(key1, value1) in project.share">
+      <div ng-repeat="(key2, value2) in value1" ng-if="value2 > 0">
+        {{key1}} owns {{key2}} {{value2}} {{ project.data.currency }}
+      </div><br />
+    </div>
+  </div>
+</accordion-group>
+</accordion>
+  
+<div class="media shadow-z-1" ng-repeat="entry in entries" style="padding-top: 4px"> 
+  <div class="media-left">
+      <img class="media-object face" ng-src="{{ entry.user.picture }}" >
+  </div>
+  <div class="media-body">
+    <h4 class="media-heading">{{entry.date}}: {{entry.description}}</h4>
+    <strong>{{entry.value}} {{ project.data.currency }}</strong>, {{entry.category}} <br />
+    <div class="col-xs-6"><a class="btn btn-default btn-flat btn-block" href="#/list/{{project.data.id}}/entry/{{entry.id}}">Edit</a></div>
+    <div class="col-xs-6"><a class="btn btn-default btn-flat btn-block" href="#/list/{{project.data.id}}/entry/add?clone={{entry.id}}">copy</a></div>
+  </div>
 </div>
-<div class="col-md-6">
-	<div ng-repeat="(key1, value1) in project.share">
-		<div ng-repeat="(key2, value2) in value1" ng-if="value2 > 0">
-			{{key1}} owns {{key2}} {{value2}} {{ project.data.currency }}
-		</div><br />
-	</div>
-</div>
-<hr />
-<a class="btn btn-fab btn-raised btn-primary pull-right" href="/#/list/{{project.data.id}}/entry/add"><i class="mdi-content-add"></i></a>
-<table class="table table-striped">
+<!--<table class="table table-striped">
   <thead>
   	<th>Date</th>
   	<th>Description</th>
@@ -28,7 +44,7 @@
 	  	<td>{{entry.category}}</td>
 	  	<td><userbadge user="entry.user"/></td>
 	  	<td>{{entry.value}}</td>
-	  	<td><a href="/#/list/{{project.data.id}}/entry/{{entry.id}}">edit</a> <a href="/#/list/{{project.data.id}}/entry/add?clone={{entry.id}}">copy</a></td>
+	  	<td><a href="#/list/{{project.data.id}}/entry/{{entry.id}}">edit</a> <a href="#/list/{{project.data.id}}/entry/add?clone={{entry.id}}">copy</a></td>
   	</tr>
   </tbody>
-</table>
+</table>-->

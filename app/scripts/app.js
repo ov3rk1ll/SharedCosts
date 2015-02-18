@@ -20,7 +20,7 @@ angular
     'ui.bootstrap',
     'ChartAngular'
   ]).constant('settings', {
-        'api': 'http://localhost/sharedcost/api'
+        'api': 'http://api.ov3rk1ll.com/sharedcosts'
   }).config(function($stateProvider, $urlRouterProvider, $httpProvider) {   
       $httpProvider.interceptors.push('errorInterceptor'); 
       $urlRouterProvider.otherwise('/');
@@ -33,8 +33,15 @@ angular
             AuthService.login($stateParams.accessToken);
           }
         })
+        .state('logout', {
+          url: '/logout',          
+          template: 'auth',
+          controller: function($state, $stateParams, $http, AuthService) {
+            AuthService.logout();
+          }
+        })
         .state('home', {
-          url: '/{returnUrl}', //returnUrl',
+          url: '/{returnUrl:(?:/[^/]+)?}', //returnUrl',
           templateUrl: 'views/main.html',
           controller: 'MainCtrl'
         })
@@ -48,7 +55,7 @@ angular
           url: '/list/add',          
           authenticate: true,
           onEnter: function($stateParams, $state, $modal, Entry, $http, settings) {
-            console.log("add form");
+            console.log('add form');
           }
         })
       .state('project', {
@@ -64,7 +71,7 @@ angular
       .state('project.edit', {
           url: '/entry/:entryid',
           authenticate: true,
-          onEnter: function($stateParams, $state, $modal, Entry, $http, settings, $location, current, entries) {
+          onEnter: function($stateParams, $state, $modal, Entry, $http, current, entries, $location) {
             $modal.open({
               templateUrl: 'views/entryedit.html',
               controller: 'EntryeditCtrl',
@@ -79,7 +86,6 @@ angular
                   }
                   return new Entry();
                 },
-                //members: function(members){ return members; /*$http.get(settings.api + '/projects/' + $stateParams.id + '/users');*/ },
                 project: function(){ return current; }
               }        
             }).result.then(
@@ -90,6 +96,7 @@ angular
         });
     }).run(function($rootScope, $state, AuthService, $cookies, $location){         
         $rootScope.$state = $state;
+        $rootScope.$title = 'Home';
         
         $rootScope.$watch( AuthService.isLoggedIn, function ( isLoggedIn ) {
             $rootScope.$isLoggedIn = isLoggedIn;
@@ -110,14 +117,14 @@ angular
     });
     
     // http://stackoverflow.com/questions/14206492/how-do-i-store-a-current-user-context-in-angular
-angular.module('sharedcostApp').factory( 'AuthService', function(settings, $http, $state, $cookies, $location, waitingDialog) {
+angular.module('sharedcostApp').factory( 'AuthService', function(settings, $http, $state, $cookieStore, $location, waitingDialog) {
   var currentUser = null;
   var currentList = null;
   return {
     oauth: function() {
       var clientId='174190054188-fnomfn083gohkmq9okkapqbevgitltnd.apps.googleusercontent.com';
-      var scope='https://www.googleapis.com/auth/userinfo.email';
-      var redirectUri='http://localhost:9000';
+      var scope='https://www.googleapis.com/auth/plus.login';
+      var redirectUri='http://ov3rk1ll.github.io/SharedCosts';
       var responseType='token';
       var url='https://accounts.google.com/o/oauth2/auth?scope='+scope+'&client_id='+clientId+'&redirect_uri='+redirectUri+'&response_type='+responseType;
       window.location.replace(url);
@@ -130,11 +137,11 @@ angular.module('sharedcostApp').factory( 'AuthService', function(settings, $http
             if(status == 'ok'){
               currentUser = data.user;
               $http.defaults.headers.common['session'] = data.session;
-              $cookies.authtoken = token;
+              $cookieStore.put('authtoken', token);
               dlg.close();
               if(returnUrl) $location.url(returnUrl); else $state.go('home');
             } else {
-              $cookies.authtoken = '';
+              $cookieStore.remove('authtoken');
               dlg.close();
               $state.go('home');
             }
@@ -144,9 +151,13 @@ angular.module('sharedcostApp').factory( 'AuthService', function(settings, $http
           });
     },
     logout: function() {
+        var dlg = waitingDialog.show("Logging you out...");
         $http.get(settings.api + '/logout').
           success(function() {
             currentUser = null;
+            $cookieStore.remove('authtoken');
+            dlg.close();
+            $state.go('home');
           }).
           error(function(status) {
             console.log(status);

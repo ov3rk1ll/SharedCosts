@@ -8,7 +8,8 @@
  * Controller of the sharedcostApp
  */
 angular.module('sharedcostApp')
-  .controller('ProjectdetailCtrl', function ($scope, current, entries) {
+  .controller('ProjectdetailCtrl', function ($scope, $rootScope, current, entries) {
+    $rootScope.$title = current.data.name;
   	$scope.project = current;
   	$scope.entries = entries;
   	$scope.members = current.payments;

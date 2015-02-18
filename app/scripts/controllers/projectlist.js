@@ -9,6 +9,7 @@
  */
 angular.module('sharedcostApp')
   .controller('ProjectlistCtrl', function ($scope, List, $rootScope) {
+  	$rootScope.$title = 'List';
     List.query(function(data){
         $scope.projects = data;
     });

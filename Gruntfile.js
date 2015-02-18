@@ -14,6 +14,8 @@ module.exports = function (grunt) {
 
   // Time how long tasks take. Can help when optimizing build times
   require('time-grunt')(grunt);
+  
+  grunt.loadNpmTasks('grunt-gh-pages');
 
   // Configurable paths for the application
   var appConfig = {
@@ -26,7 +28,13 @@ module.exports = function (grunt) {
 
     // Project settings
     yeoman: appConfig,
-
+    
+    'gh-pages': {
+        options: {
+          base: 'dist'
+        },
+        src: ['**']
+    },
     // Watches files for changes and runs tasks based on the changed files
     watch: {
       bower: {
@@ -42,7 +50,7 @@ module.exports = function (grunt) {
       },
       jsTest: {
         files: ['test/spec/{,*/}*.js'],
-        tasks: ['newer:jshint:test', 'karma']
+        tasks: ['newer:jshint:test']
       },
       styles: {
         files: ['<%= yeoman.app %>/styles/{,*/}*.css'],
@@ -166,7 +174,7 @@ module.exports = function (grunt) {
         src: ['<%= yeoman.app %>/index.html'],
         ignorePath:  /\.\.\//
       },
-      test: {
+      /*test: {
         devDependencies: true,
         src: '<%= karma.unit.configFile %>',
         ignorePath:  /\.\.\//,
@@ -181,7 +189,7 @@ module.exports = function (grunt) {
               }
             }
           }
-      }
+      }*/
     },
 
     // Renames files for browser caching purposes
@@ -340,6 +348,11 @@ module.exports = function (grunt) {
           cwd: 'bower_components/bootstrap/dist',
           src: 'fonts/*',
           dest: '<%= yeoman.dist %>'
+        }, {
+          expand: true,
+          cwd: 'bower_components/bootstrap-material-design/dist',
+          src: 'fonts/*',
+          dest: '<%= yeoman.dist %>'
         }]
       },
       styles: {
@@ -366,12 +379,12 @@ module.exports = function (grunt) {
     },
 
     // Test settings
-    karma: {
+    /*karma: {
       unit: {
         configFile: 'test/karma.conf.js',
         singleRun: true
       }
-    }
+    }*/
   });
 
 
@@ -397,11 +410,11 @@ module.exports = function (grunt) {
 
   grunt.registerTask('test', [
     'clean:server',
-    'wiredep:test',
+    //'wiredep:test',
     'concurrent:test',
     'autoprefixer',
-    'connect:test',
-    'karma'
+    'connect:test'/*,
+    'karma'*/
   ]);
 
   grunt.registerTask('build', [

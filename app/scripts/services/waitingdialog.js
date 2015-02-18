@@ -29,7 +29,7 @@ angular.module('sharedcostApp')
             options = {};
           }
           var settings = $.extend({
-            progressType: 'primary'
+            progressType: 'material-yellow-A700'
           }, options);
           if (typeof message === 'undefined') {
             message = 'Loading';
