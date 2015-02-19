@@ -1,0 +1,53 @@
+<div class="container" ng-controller="NavigationCtrl">
+  <div class="navbar-header">
+    <a class="navbar-toggle">
+      <span class="sr-only">Toggle navigation</span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </a>
+    <a class="navbar-brand" href="#/">SharedCosts - {{$title}}</a>
+  </div>
+  <div id="slidemenu">
+    <div ng-show="$isLoggedIn" class="visible-xs-block" style="height: 100px; background-image: url('http://i.imgur.com/JzqNpVv.jpg'); background-size: cover; vertical-algin: top; padding: 0px 8px">
+      <img style="float: right; height: 80px; margin-top: 10px;" ng-src="{{ $currentUser.picture }}" alt="{{ $currentUser.name }}" class="img-circle" /><br />
+      <h4>Hello {{ $currentUser.given_name }}</h4>
+      <a href="#/logout" style="color: #fff !important">Logout</a>
+    </div>
+
+    <ul class="nav navbar-nav hidden-xs">
+      <li ng-show="$isLoggedIn"><a href="#/list/new/edit">Create List</a></li>
+      <li class="dropdown" ng-show="$isLoggedIn">
+        <a href="" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Your lists <span class="caret"></span></a>
+        <ul class="dropdown-menu" role="menu">                
+          <li ng-repeat="project in projects"><a href="#/list/{{project.id}}">{{project.name}}</a></li>
+        </ul>
+      </li>
+      <li ng-show="$isLoggedIn"><a href="#/list">Manage lists</a></li>
+    </ul>
+    <ul class="nav navbar-nav navbar-right hidden-xs">
+      <li class="dropdown" ng-show="$isLoggedIn">            
+        <a href="" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Hello {{ $currentUser.given_name }} <img ng-src="{{ $currentUser.picture }}" alt="{{ $currentUser.name }}" class="img-circle" title="" style="max-height: 18px;"> <span class="caret"></span></a>
+        <ul class="dropdown-menu" role="menu">
+          <li><a href="#/settings">Settings</a></li>
+          <li><a href="#/logout">Logout</a></li>
+        </ul>
+      </li>
+      <li ng-show="!$isLoggedIn">            
+        <button type="button" ng-click="login()" class="btn btn-success navbar-btn">Login</button>
+      </li>
+    </ul>
+
+    <ul class="nav navbar-nav visible-xs-block">
+      <li ng-show="$isLoggedIn"><a href="#/list/new/edit"><i class="mdi-content-add"></i>Create List</a></li>
+      <li class="divider"></li>
+      <li class="dropdown-header">Your lists</li>
+      <li ng-repeat="project in projects | limitTo:5"><a href="#/list/{{project.id}}">{{project.name}}</a></li>
+      <li ng-show="$isLoggedIn"><a href="#/list">Show all Lists</a></li>            
+      <li class="divider"></li>
+      <li class="dropdown-header">more</li>
+      <li><a href="#/settings">Settings</a></li>
+      <li><a href="#/logout">Logout</a></li>
+    </ul>
+  </div><!--/slidemenu -->
+</div>

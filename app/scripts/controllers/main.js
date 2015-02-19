@@ -8,8 +8,9 @@
  * Controller of the sharedcostApp
  */
 angular.module('sharedcostApp')
-  .controller('MainCtrl', function ($scope, $stateParams, AuthService, $cookieStore) {
-
+  .controller('MainCtrl', function ($scope, $rootScope, $stateParams, AuthService, $cookieStore) {
+    $rootScope.$title = 'Home';
+    
     if($cookieStore.get('authtoken') && !AuthService.isLoggedIn() ){        
         AuthService.login($cookieStore.get('authtoken'), $stateParams.returnUrl);  
     }

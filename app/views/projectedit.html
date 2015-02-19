@@ -1,0 +1,40 @@
+
+<input type="text" ng-model="item.data.name" class="form-control input-lg" placeholder="Name"><br />
+<table class="table table-striped">
+  <thead>
+  	<th>User</th>
+  	<th>Owner</th>
+  	<th>Edit</th>
+  	<th>Write</th>
+  	<th>Read</th>
+  	<th></th>
+  </thead>
+  <tbody>
+  	<tr ng-repeat="user in item.members">
+	  	<td><userbadge user="user"></userbadge></td>
+	  	<td><input type="checkbox" ng-model="user.level" bitpermissions bit="8" ng-disabled="true"></td>
+	  	<td><input type="checkbox" ng-model="user.level" bitpermissions bit="4"></td>
+	  	<td><input type="checkbox" ng-model="user.level" bitpermissions bit="2"></td>
+	  	<td><input type="checkbox" ng-model="user.level" bitpermissions bit="1"></td>
+	  	<td><button ng-disabled="user.id == item.data.creator" ng-click="remove(item.members, $index)">remove</button></td>
+  	</tr>
+    <tr>
+      <td>
+        <input type="text" ng-model="newuser.authid" typeahead="person as person.name for person in getLocation($viewValue) | filter:{name:$viewValue}" class="form-control" typeahead-template-url="customTemplate.html">
+    </td>
+      <td><input type="checkbox" ng-model="newuser.level" bitpermissions bit="8" ng-disabled="true"></td>
+      <td><input type="checkbox" ng-model="newuser.level" bitpermissions bit="4"></td>
+      <td><input type="checkbox" ng-model="newuser.level" bitpermissions bit="2"></td>
+      <td><input type="checkbox" ng-model="newuser.level" bitpermissions bit="1"></td>
+      <td><button ng-click="add(newuser)">add</button><button ng-click="newuser = {}">clear</button></td>
+    </tr>
+  </tbody>
+</table>
+<button ng-click="save()">Save</button> <hr />
+
+<script type="text/ng-template" id="customTemplate.html">
+  <a>
+      <img ng-src="{{match.model.picture}}" width="16">
+      <span bind-html-unsafe="match.model.name | typeaheadHighlight:query"></span>
+  </a>
+</script>

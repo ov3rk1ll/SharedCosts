@@ -13,7 +13,7 @@ angular.module('sharedcostApp')
 
     $scope.item = item;
     $scope.projectId = project.data.id
-    $scope.members = project.payments;
+    $scope.members = project.members;
 
     $scope.dateOptions = {
 	    startingDay: 1

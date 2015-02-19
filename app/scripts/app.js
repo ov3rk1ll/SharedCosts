@@ -24,7 +24,9 @@ angular
   }).config(function($stateProvider, $urlRouterProvider, $httpProvider) {   
       $httpProvider.interceptors.push('errorInterceptor'); 
       $urlRouterProvider.otherwise('/');
-      
+
+      var modalInstance;
+
       $stateProvider
         .state('auth', {
           url: '/access_token={accessToken}&token_type={tokenType}&expires_in={expiresIn}',          
@@ -51,11 +53,20 @@ angular
           controller: 'ProjectlistCtrl',
           authenticate: true
         })
-      .state('createproject', {
+      /*.state('createproject', {
           url: '/list/add',          
           authenticate: true,
           onEnter: function($stateParams, $state, $modal, Entry, $http, settings) {
             console.log('add form');
+          }
+        })*/
+      .state('projectsettings', {
+          url: '/list/:id/edit',
+          templateUrl: 'views/projectedit.html',
+          controller: 'ProjecteditCtrl',
+          authenticate: true,
+          resolve: {
+            current: function($stateParams, List){ return $stateParams.id == 'new' ? new List() : List.get({id:$stateParams.id}).$promise; }
           }
         })
       .state('project', {
@@ -68,11 +79,11 @@ angular
             entries: function($stateParams, Entry){ return Entry.query({projectId:$stateParams.id}).$promise; }
           }
         })
-      .state('project.edit', {
+      .state('project.entries', {
           url: '/entry/:entryid',
           authenticate: true,
           onEnter: function($stateParams, $state, $modal, Entry, $http, current, entries, $location) {
-            $modal.open({
+            modalInstance = $modal.open({
               templateUrl: 'views/entryedit.html',
               controller: 'EntryeditCtrl',
               resolve: { 
@@ -88,10 +99,16 @@ angular
                 },
                 project: function(){ return current; }
               }        
-            }).result.then(
+            });
+            modalInstance.result.then(
                 function() { $state.go('project',  {id: $stateParams.id}, {reload: true}); }, 
                 function() { $state.go('project', {id: $stateParams.id}); }
             );
+          },
+          onExit: function() {
+            if (modalInstance) {
+                modalInstance.dismiss();
+            }
           }
         });
     }).run(function($rootScope, $state, AuthService, $cookies, $location){         
@@ -122,9 +139,9 @@ angular.module('sharedcostApp').factory( 'AuthService', function(settings, $http
   var currentList = null;
   return {
     oauth: function() {
-      var clientId='174190054188-fnomfn083gohkmq9okkapqbevgitltnd.apps.googleusercontent.com';
+      var clientId='197856423856-rg60fvq6n1g2ouh00sc70b8cnf1puqt7.apps.googleusercontent.com';
       var scope='https://www.googleapis.com/auth/plus.login';
-      var redirectUri='http://ov3rk1ll.github.io/SharedCosts';
+      var redirectUri= /*'http://localhost:9000'; */ 'http://ov3rk1ll.github.io/SharedCosts';
       var responseType='token';
       var url='https://accounts.google.com/o/oauth2/auth?scope='+scope+'&client_id='+clientId+'&redirect_uri='+redirectUri+'&response_type='+responseType;
       window.location.replace(url);
@@ -166,8 +183,15 @@ angular.module('sharedcostApp').factory( 'AuthService', function(settings, $http
     isLoggedIn: function() { return currentUser !== null; },
     currentUser: function() { return currentUser; },
 
-    getCurrentList: function() { return currentList; },
-    setCurrentList: function(list) { currentList = list; }
+    hasPermission: function(project, permission) {
+      for (var m in project.members){
+        if(project.members[m].id == currentUser.user_id){
+          var x = parseInt(project.members[m].level) & parseInt(permission);
+          if(x > 0) return true;
+        }
+      }
+      return false;
+    }
   };
 }).factory('errorInterceptor', function ($q) {
         return {
