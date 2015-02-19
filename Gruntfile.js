@@ -16,6 +16,8 @@ module.exports = function (grunt) {
   require('time-grunt')(grunt);
   
   grunt.loadNpmTasks('grunt-gh-pages');
+  
+  grunt.loadNpmTasks('grunt-string-replace');
 
   // Configurable paths for the application
   var appConfig = {
@@ -28,12 +30,28 @@ module.exports = function (grunt) {
 
     // Project settings
     yeoman: appConfig,
+    pkg: grunt.file.readJSON('package.json'),
     
     'gh-pages': {
         options: {
           base: 'dist'
         },
         src: ['**']
+    },
+    'string-replace': {
+      dist: {
+        files: {
+          '<%= yeoman.app %>/': '<%= yeoman.app %>/**',
+        },
+        options: {
+          replacements: [{
+            pattern: /<!-- @package\.(.*?) -->(.*?)<!-- \/package -->/ig,
+            replacement: function (match, p1) {
+              return "<!-- @package." + p1 + " -->" + grunt.file.readJSON('package.json')[p1] + "<!-- /package -->";
+            }
+          }]
+        }
+      }
     },
     // Watches files for changes and runs tasks based on the changed files
     watch: {
@@ -396,6 +414,7 @@ module.exports = function (grunt) {
     grunt.task.run([
       'clean:server',
       'wiredep',
+      'string-replace',
       'concurrent:server',
       'autoprefixer',
       'connect:livereload',
@@ -420,6 +439,7 @@ module.exports = function (grunt) {
   grunt.registerTask('build', [
     'clean:dist',
     'wiredep',
+    'string-replace',
     'useminPrepare',
     'concurrent:dist',
     'autoprefixer',
